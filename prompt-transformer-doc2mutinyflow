@@ -1,0 +1,493 @@
+## 1. Metadata & Declaration
+
+| Field       | Value                                                                                                                                                  |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| ID          | urn:prompt:transformer:doc2mutinyflow:1.0.0                                                                                                           |
+| Version     | 1.0.0                                                                                                                                                  |
+| Domain      | transformer                                                                                                                                            |
+| Task        | doc2mutinyflow                                                                                                                                         |
+| Description | Transform technical documentation into reactive flow design using Mutiny (Java) with Uni/Multi patterns, non-blocking operations, and backpressure handling. |
+| Author      | [System]                                                                                                                                               |
+
+## 2. Transformation Specification
+
+### 2.1. Formal Objective
+
+To process technical documentation describing asynchronous operations, data pipelines, or event-driven workflows into comprehensive Mutiny-based reactive flow designs that leverage `Uni` for single-value operations, `Multi` for stream processing, and reactive combinators for non-blocking coordination with proper backpressure handling and error recovery strategies.
+
+### 2.2. Input Schema (Source)
+
+* **Type:** Technical Documentation (Markdown, Natural Language), API Specifications, Process Descriptions
+* **Constraints:**
+  * Must contain identifiable asynchronous operations, data flows, or event processing workflows
+  * Should specify input/output relationships, transformation steps, or coordination patterns
+  * May include error handling requirements, timeout specifications, or performance constraints
+  * Can reference existing synchronous operations that need reactive transformation
+* **Example:**
+
+  > "The user service validates credentials, fetches user profile from database, enriches with permissions from authorization service, and returns complete user context. If validation fails, return error immediately. All operations have 5-second timeout with retry on failure."
+
+### 2.3. Output Schema (Target)
+
+* **Type:** Mutiny Reactive Flow Design (Java Code, Flow Diagrams, Markdown Documentation)
+* **Constraints:**
+  * Must use appropriate Mutiny types (`Uni<T>` for single values, `Multi<T>` for streams)
+  * Must implement non-blocking operations with proper backpressure handling
+  * Must include error handling with recovery strategies and timeout configurations
+  * Must demonstrate reactive composition using Mutiny combinators
+  * Must preserve all business logic while ensuring reactive principles
+* **Example:**
+
+```java
+public Uni<UserContext> getUserContext(String credentials) {
+    return validateCredentials(credentials)
+        .chain(userId -> Uni.combine()
+            .all()
+            .unis(
+                fetchUserProfile(userId),
+                fetchUserPermissions(userId)
+            )
+            .asTuple()
+            .map(tuple -> new UserContext(tuple.getItem1(), tuple.getItem2()))
+        )
+        .ifNoItem()
+        .after(Duration.ofSeconds(5))
+        .fail()
+        .onFailure()
+        .retry()
+        .atMost(3);
+}
+```
+
+### 2.4. Preconditions
+
+* Input must contain identifiable asynchronous operations or data processing workflows
+* Operations must have clear input/output relationships and transformation logic
+* Error handling and timeout requirements must be specified or inferable
+
+### 2.5. Postconditions (Guarantees)
+
+* All blocking operations must be transformed to non-blocking Mutiny patterns
+* Proper backpressure handling must be implemented for stream operations
+* Error recovery strategies must be included with appropriate retry mechanisms
+* Resource management must follow reactive principles with proper cleanup
+* Performance characteristics must be optimized for reactive execution
+
+## 3. Operational Protocol (Agentic Instructions)
+
+### 3.1. Cognitive Strategy
+
+Flow Analysis + Reactive Pattern Mapping + Mutiny Composition + Backpressure Design + Error Recovery Planning
+
+### 3.2. Execution Steps
+
+#### Transformation Pipeline Requirements:
+
+* **Phase 1 – Flow Analysis:**
+  Parse documentation to identify asynchronous operations, data flows, and coordination patterns.
+
+* **Phase 2 – Reactive Pattern Mapping:**
+  Map operations to appropriate Mutiny types (Uni vs Multi) and identify composition patterns.
+
+* **Phase 3 – Combinator Selection:**
+  Choose appropriate Mutiny combinators for operation chaining, merging, and coordination.
+
+* **Phase 4 – Backpressure Design:**
+  Implement backpressure strategies for stream operations and resource management.
+
+* **Phase 5 – Error Recovery:**
+  Design comprehensive error handling with retry policies, fallbacks, and circuit breakers.
+
+* **Phase 6 – Performance Optimization:**
+  Optimize reactive flows for throughput, latency, and resource utilization.
+
+### Additional Step Logic
+
+* **Step 1: Operation Classification**
+  * **Action:** Classify operations as single-value (Uni) or stream (Multi) based on cardinality.
+  * **Rationale:** Ensure correct Mutiny type selection for optimal performance.
+
+* **Step 2: Dependency Analysis**
+  * **Action:** Identify operation dependencies and coordination requirements.
+  * **Rationale:** Determine appropriate combination strategies (sequential vs parallel).
+
+* **Step 3: Reactive Composition**
+  * **Action:** Chain operations using appropriate Mutiny combinators (chain, combine, merge).
+  * **Rationale:** Maintain non-blocking execution while preserving business logic.
+
+* **Step 4: Backpressure Strategy**
+  * **Action:** Implement backpressure handling for stream operations using appropriate operators.
+  * **Rationale:** Prevent resource exhaustion and maintain system stability.
+
+* **Step 5: Error Recovery Design**
+  * **Action:** Implement comprehensive error handling with retry, fallback, and circuit breaker patterns.
+  * **Rationale:** Ensure system resilience and graceful degradation.
+
+* **Step 6: Resource Management**
+  * **Action:** Ensure proper resource cleanup and connection management in reactive flows.
+  * **Rationale:** Prevent resource leaks and optimize resource utilization.
+
+* **Validation & Refinement (Self-Correction Loop):**
+  * **Action:** Validate reactive flow correctness, performance characteristics, and error handling.
+  * **If any check fails:** Iterate with revised combinator usage and error handling strategies.
+
+## 4. Schema & Encoding Bindings
+
+### 4.1. External References
+
+* Mutiny Documentation: [https://smallrye.io/smallrye-mutiny/](https://smallrye.io/smallrye-mutiny/)
+* Reactive Streams: [https://www.reactive-streams.org/](https://www.reactive-streams.org/)
+* Reactive Manifesto: [https://www.reactivemanifesto.org/](https://www.reactivemanifesto.org/)
+* Quarkus Reactive: [https://quarkus.io/guides/getting-started-reactive](https://quarkus.io/guides/getting-started-reactive)
+
+### 4.2. Target Formalism
+
+* **Language:** Java with Mutiny library
+* **Framework:** Quarkus
+* **Patterns:** Reactive Programming, Functional Composition
+* **Execution Model:** Non-blocking, Event-driven
+* **Concurrency:** Asynchronous, Backpressure-aware
+
+## 5. Mutiny Flow Design Template
+
+### 5.1. Core Mutiny Types
+
+1. **Uni<T>**
+   - Single-value asynchronous operations
+   - Lazy evaluation with subscription-based execution
+   - Chainable transformations and error handling
+
+2. **Multi<T>**
+   - Stream processing with backpressure support
+   - Hot and cold stream patterns
+   - Operator-based transformations
+
+3. **Combinators**
+   - Sequential composition: `chain()`, `map()`, `flatMap()`
+   - Parallel composition: `combine()`, `merge()`
+   - Error handling: `onFailure()`, `recover()`, `retry()`
+
+### 5.2. Reactive Patterns
+
+* **Chain Pattern:** Sequential operation composition
+* **Combine Pattern:** Parallel operation coordination
+* **Merge Pattern:** Stream aggregation and processing
+* **Retry Pattern:** Resilient error recovery
+* **Circuit Breaker:** Fault tolerance and system protection
+
+## 6. Illustrative Example (Unit Test)
+
+### 6.1. Input Instance
+
+> "The order processing system receives order requests, validates inventory availability, processes payment, updates inventory, sends confirmation email, and logs the transaction. If inventory is insufficient, return error. If payment fails, retry up to 3 times with exponential backoff. All operations must complete within 30 seconds. Process up to 100 orders per second with proper backpressure handling."
+
+### 6.2. Expected Output Instance
+
+```java
+// Mutiny Reactive Flow Design for Order Processing System
+
+@ApplicationScoped
+public class OrderProcessingService {
+    
+    @Inject
+    InventoryService inventoryService;
+    
+    @Inject
+    PaymentService paymentService;
+    
+    @Inject
+    EmailService emailService;
+    
+    @Inject
+    AuditService auditService;
+    
+    /**
+     * Process single order with reactive flow
+     * @param orderRequest the order to process
+     * @return Uni<OrderResult> containing processing result
+     */
+    public Uni<OrderResult> processOrder(OrderRequest orderRequest) {
+        return validateInventory(orderRequest)
+            .chain(validation -> {
+                if (!validation.isValid()) {
+                    return Uni.createFrom().failure(
+                        new InsufficientInventoryException(validation.getMessage())
+                    );
+                }
+                return processPaymentWithRetry(orderRequest);
+            })
+            .chain(payment -> updateInventoryAndSendNotifications(orderRequest, payment))
+            .ifNoItem()
+            .after(Duration.ofSeconds(30))
+            .fail()
+            .onFailure()
+            .transform(failure -> new OrderProcessingException("Order processing timeout", failure));
+    }
+    
+    /**
+     * Process multiple orders with backpressure handling
+     * @param orderStream stream of order requests
+     * @return Multi<OrderResult> with processed results
+     */
+    public Multi<OrderResult> processOrderStream(Multi<OrderRequest> orderStream) {
+        return orderStream
+            .onOverflow()
+            .buffer(100) // Buffer up to 100 orders
+            .onOverflow()
+            .drop() // Drop excess orders when buffer is full
+            .emitOn(Infrastructure.getDefaultExecutor())
+            .map(this::processOrder)
+            .merge(10) // Process up to 10 orders concurrently
+            .onFailure()
+            .recoverWithItem(failure -> OrderResult.failed(failure.getMessage()));
+    }
+    
+    /**
+     * Validate inventory availability
+     */
+    private Uni<InventoryValidation> validateInventory(OrderRequest order) {
+        return inventoryService.checkAvailability(order.getItems())
+            .map(availability -> new InventoryValidation(
+                availability.isAvailable(),
+                availability.getMessage()
+            ))
+            .onFailure()
+            .retry()
+            .withBackOff(Duration.ofMillis(100), Duration.ofSeconds(2))
+            .atMost(3);
+    }
+    
+    /**
+     * Process payment with retry logic
+     */
+    private Uni<PaymentResult> processPaymentWithRetry(OrderRequest order) {
+        return paymentService.processPayment(order.getPaymentInfo())
+            .onFailure(PaymentTemporaryException.class)
+            .retry()
+            .withBackOff(Duration.ofMillis(500), Duration.ofSeconds(5))
+            .atMost(3)
+            .onFailure()
+            .transform(failure -> new PaymentProcessingException("Payment failed after retries", failure));
+    }
+    
+    /**
+     * Update inventory and send notifications in parallel
+     */
+    private Uni<OrderResult> updateInventoryAndSendNotifications(OrderRequest order, PaymentResult payment) {
+        Uni<Void> inventoryUpdate = inventoryService.updateInventory(order.getItems())
+            .replaceWithVoid();
+        
+        Uni<Void> emailNotification = emailService.sendConfirmation(order.getCustomerEmail(), payment)
+            .replaceWithVoid();
+        
+        Uni<Void> auditLog = auditService.logTransaction(order, payment)
+            .replaceWithVoid();
+        
+        return Uni.combine()
+            .all()
+            .unis(inventoryUpdate, emailNotification, auditLog)
+            .discardItems()
+            .map(ignored -> OrderResult.success(order.getOrderId(), payment.getTransactionId()))
+            .onFailure()
+            .recoverWithItem(failure -> {
+                // Log compensation actions needed
+                auditService.logCompensationRequired(order.getOrderId(), failure).subscribe().with(
+                    success -> {}, 
+                    error -> logger.error("Failed to log compensation requirement", error)
+                );
+                return OrderResult.failed("Post-payment processing failed: " + failure.getMessage());
+            });
+    }
+}
+
+// Supporting reactive services
+@ApplicationScoped
+public class InventoryService {
+    
+    public Uni<InventoryAvailability> checkAvailability(List<OrderItem> items) {
+        return Uni.createFrom().emitter(emitter -> {
+            // Non-blocking inventory check
+            vertx.executeBlocking(promise -> {
+                try {
+                    InventoryAvailability result = performInventoryCheck(items);
+                    promise.complete(result);
+                } catch (Exception e) {
+                    promise.fail(e);
+                }
+            }, emitter::complete);
+        });
+    }
+    
+    public Uni<Void> updateInventory(List<OrderItem> items) {
+        return Uni.createFrom().emitter(emitter -> {
+            vertx.executeBlocking(promise -> {
+                try {
+                    performInventoryUpdate(items);
+                    promise.complete();
+                } catch (Exception e) {
+                    promise.fail(e);
+                }
+            }, emitter::complete);
+        });
+    }
+}
+
+@ApplicationScoped
+public class PaymentService {
+    
+    public Uni<PaymentResult> processPayment(PaymentInfo paymentInfo) {
+        return Uni.createFrom().emitter(emitter -> {
+            // Non-blocking payment processing
+            paymentGateway.processAsync(paymentInfo)
+                .thenAccept(emitter::complete)
+                .exceptionally(throwable -> {
+                    emitter.fail(throwable);
+                    return null;
+                });
+        });
+    }
+}
+
+// Reactive flow diagrams and operator explanations
+/*
+Flow Diagram:
+┌─────────────────┐
+│ Order Request   │
+└─────────┬───────┘
+          │
+          ▼
+┌─────────────────┐
+│ Validate        │
+│ Inventory       │
+│ (Uni + Retry)   │
+└─────────┬───────┘
+          │
+          ▼
+┌─────────────────┐
+│ Process Payment │
+│ (Uni + Retry)   │
+└─────────┬───────┘
+          │
+          ▼
+┌─────────────────┐
+│ Parallel Tasks  │
+│ (Uni.combine)   │
+├─────────────────┤
+│ • Update Inv    │
+│ • Send Email    │
+│ • Log Audit     │
+└─────────┬───────┘
+          │
+          ▼
+┌─────────────────┐
+│ Order Result    │
+└─────────────────┘
+
+Key Mutiny Operators Used:
+- chain(): Sequential composition of async operations
+- combine(): Parallel execution of independent operations
+- onFailure().retry(): Resilient error handling with backoff
+- ifNoItem().after(): Timeout handling
+- onOverflow(): Backpressure management for streams
+- emitOn(): Thread pool management
+- merge(): Concurrent stream processing
+*/
+
+// Configuration and performance tuning
+@ApplicationScoped
+public class ReactiveConfiguration {
+    
+    @Produces
+    @ApplicationScoped
+    public Infrastructure configureInfrastructure() {
+        return Infrastructure.getDefaultWorkerPool()
+            .withThreadPoolSize(50)
+            .withMaxQueueSize(1000);
+    }
+    
+    // Backpressure strategies
+    public enum BackpressureStrategy {
+        BUFFER,     // Buffer items up to limit
+        DROP,       // Drop excess items
+        LATEST,     // Keep only latest items
+        ERROR       // Fail on overflow
+    }
+    
+    // Circuit breaker configuration
+    @ConfigProperty(name = "order.circuit-breaker.failure-threshold")
+    int failureThreshold = 5;
+    
+    @ConfigProperty(name = "order.circuit-breaker.delay")
+    Duration circuitBreakerDelay = Duration.ofSeconds(30);
+}
+
+// Error handling and recovery strategies
+public class OrderProcessingException extends RuntimeException {
+    public OrderProcessingException(String message, Throwable cause) {
+        super(message, cause);
+    }
+}
+
+public class InsufficientInventoryException extends RuntimeException {
+    public InsufficientInventoryException(String message) {
+        super(message);
+    }
+}
+
+public class PaymentProcessingException extends RuntimeException {
+    public PaymentProcessingException(String message, Throwable cause) {
+        super(message, cause);
+    }
+}
+
+// Performance monitoring and metrics
+@ApplicationScoped
+public class ReactiveMetrics {
+    
+    @Inject
+    MeterRegistry meterRegistry;
+    
+    public Uni<OrderResult> monitorOrderProcessing(Uni<OrderResult> orderFlow) {
+        return orderFlow
+            .onItem().invoke(result -> {
+                meterRegistry.counter("orders.processed", "status", "success").increment();
+            })
+            .onFailure().invoke(failure -> {
+                meterRegistry.counter("orders.processed", "status", "failure").increment();
+                meterRegistry.counter("orders.failures", "type", failure.getClass().getSimpleName()).increment();
+            });
+    }
+}
+```
+
+### 6.3. Reactive Flow Characteristics
+
+**Non-blocking Operations:**
+- All I/O operations use reactive clients
+- No blocking threads or synchronous calls
+- Efficient resource utilization with thread pooling
+
+**Backpressure Handling:**
+- Buffer-based overflow management
+- Configurable drop strategies for excess load
+- Concurrent processing limits to prevent resource exhaustion
+
+**Error Recovery:**
+- Exponential backoff retry strategies
+- Circuit breaker patterns for fault tolerance
+- Comprehensive exception handling with typed failures
+
+**Performance Optimization:**
+- Parallel execution where possible
+- Efficient combinator usage
+- Metrics and monitoring integration
+
+### 6.4. Validation Criteria
+
+The output must demonstrate:
+- Correct Mutiny type selection (Uni vs Multi)
+- Proper reactive composition using appropriate combinators
+- Comprehensive error handling with retry and recovery strategies
+- Backpressure management for stream operations
+- Performance optimization and resource management
+- Non-blocking execution throughout the entire flow
